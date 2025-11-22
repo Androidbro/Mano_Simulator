@@ -1,43 +1,33 @@
-# simulator/machine.py
-
 from .registers import Register, Flag
 from .memory import Memory
 from .instruction_set import InstructionSet
 
 
 class Machine:
-
     def __init__(self):
-        # Registers
         self.AR = Register("AR", 12)
         self.PC = Register("PC", 12)
         self.DR = Register("DR", 16)
         self.AC = Register("AC", 16)
         self.IR = Register("IR", 16)
         self.TR = Register("TR", 16)
-        self.SC = Register("SC", 4)   # timing / sequence counter T0–T15
+        self.SC = Register("SC", 4)
 
-        # Flags / flip-flops
-        self.E = Flag("E")   # carry
-        self.I = Flag("I")   # indirect bit
-        self.S = Flag("S")   # start / halt
+        self.E = Flag("E")
+        self.I = Flag("I")
+        self.S = Flag("S")
 
-        # Start in running state
         self.S.set()
 
-        # Subsystems
         self.memory = Memory()
         self.iset = InstructionSet(self)
 
-        # Profiler counters
         self.total_cycles = 0
         self.instr_count = 0
-
 
     def finish_instruction(self):
         self.SC.clear()
         self.instr_count += 1
-
 
     @staticmethod
     def format_word(val: int) -> str:
@@ -47,7 +37,6 @@ class Machine:
     def format_bin16(val: int) -> str:
         s = f"{val & 0xFFFF:016b}"
         return " ".join(s[i:i+4] for i in range(0, 16, 4))
-
 
     def load_program_and_data(
         self,
@@ -61,35 +50,28 @@ class Machine:
         self.SC.clear()
         self.S.set()
 
-
     def _reset_updates(self):
-        """Clear the 'updated' flag on all registers and flags each cycle."""
         for reg in [self.AR, self.PC, self.DR, self.AC, self.IR, self.TR, self.SC]:
             reg.reset_state()
         for flag in [self.E, self.I, self.S]:
             flag.reset_state()
 
-
     def step_cycle(self):
         self._reset_updates()
 
         if self.S.value == 0:
-            # CPU is halted
             self.total_cycles += 1
             return "CPU halted (HLT executed)", set()
 
         T = self.SC.value
         changed = set()
 
-        #FETCH
         if T == 0:
-            # T0: AR <- PC
             self.AR.load(self.PC.value)
             self.SC.increment()
             micro = "T0: AR ← PC"
 
         elif T == 1:
-            # T1: IR <- M[AR], PC <- PC + 1
             word = self.memory.read(self.AR.value)
             self.IR.load(word)
             self.PC.increment()
@@ -97,8 +79,7 @@ class Machine:
             micro = "T1: IR ← M[AR], PC ← PC + 1"
 
         elif T == 2:
-            # T2: AR <- IR(0-11), I <- IR(15)
-            self.AR.load(self.IR.value)  # masking inside Register keeps 12 bits
+            self.AR.load(self.IR.value)
             indirect_bit = (self.IR.value >> 15) & 1
             if indirect_bit:
                 self.I.set()
@@ -107,20 +88,15 @@ class Machine:
             self.SC.increment()
             micro = "T2: AR ← IR(0–11), I ← IR(15)"
 
-        #DECODE/EXECUTE PHASE
         else:
             opcode = (self.IR.value >> 12) & 0x7
             if opcode == 0b111 and self.I.value == 0:
-                # Register-reference instruction
                 micro, changed = self.iset.execute_register_ref(T)
             else:
-                # Memory-reference instruction (handles indirect inside)
                 micro, changed = self.iset.execute_memory_ref(opcode, T)
 
-        #PROFILER
         self.total_cycles += 1
 
-        # Track which components changed (based on flags)
         reg_map = {
             "AR": self.AR,
             "PC": self.PC,
@@ -144,7 +120,6 @@ class Machine:
                 changed.add(name)
 
         return micro, changed
-
 
     def step_instruction(self):
         if self.S.value == 0:
