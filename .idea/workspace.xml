@@ -5,21 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff9edf83-4b64-4492-9f26-25f97b2e6820" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/gui/assets/bus_datapath.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/control_unit.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/sequencer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/control/signals.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/assembly_code.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/assembly_code.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui/datapath_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui/datapath_view.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/profiler/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/profiler/profiler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulator/instruction_set.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulator/instruction_set.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulator/machine.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulator/machine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/formatter.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/logger.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
