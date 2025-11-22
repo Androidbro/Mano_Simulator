@@ -1,6 +1,6 @@
 # simulator/instruction_set.py
 
-class InstructionsSet:
+class InstructionSet:
     def __init__(self, machine):
         self.m = machine
 
