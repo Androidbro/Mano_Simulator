@@ -6,7 +6,7 @@ LOP, 	CLE 		#Clear E
      	SZE		#Check if bit is zero
      	BUN ONE 	#Bit is one; go to ONE
 	BUN ZRO		#Bit is zero; go to ZRO
-ONE,	LDA X		#Load multiplicand 
+ONE,	LDA X		#Load multiplicand
 	ADD P		#Add to partial product
 	STA P		#Store partial product
 	CLE		#Clear E
