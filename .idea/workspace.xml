@@ -7,7 +7,7 @@
     <list default="true" id="ff9edf83-4b64-4492-9f26-25f97b2e6820" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cli/commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/cli/commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulator/machine.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulator/machine.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cli/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/cli/interface.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
