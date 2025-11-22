@@ -18,13 +18,9 @@ class Machine:
         self.SC = Register("SC", 4)   # timing / sequence counter T0–T15
 
         # Flags / flip-flops
-        self.E   = Flag("E")   # carry
-        self.I   = Flag("I")   # indirect bit
-        self.S   = Flag("S")   # start / halt
-        self.R   = Flag("R")
-        self.IEN = Flag("IEN")
-        self.FGI = Flag("FGI")
-        self.FGO = Flag("FGO")
+        self.E = Flag("E")   # carry
+        self.I = Flag("I")   # indirect bit
+        self.S = Flag("S")   # start / halt
 
         # Start in running state
         self.S.set()
@@ -39,7 +35,6 @@ class Machine:
 
 
     def finish_instruction(self):
-        """Reset SC and bump instruction counter at end of an instruction."""
         self.SC.clear()
         self.instr_count += 1
 
@@ -52,6 +47,7 @@ class Machine:
     def format_bin16(val: int) -> str:
         s = f"{val & 0xFFFF:016b}"
         return " ".join(s[i:i+4] for i in range(0, 16, 4))
+
 
     def load_program_and_data(
         self,
@@ -70,18 +66,11 @@ class Machine:
         """Clear the 'updated' flag on all registers and flags each cycle."""
         for reg in [self.AR, self.PC, self.DR, self.AC, self.IR, self.TR, self.SC]:
             reg.reset_state()
-        for flag in [self.E, self.I, self.S, self.R, self.IEN, self.FGI, self.FGO]:
+        for flag in [self.E, self.I, self.S]:
             flag.reset_state()
 
 
     def step_cycle(self):
-        """
-        Execute a single clock cycle (one T state).
-        T0–T2: fetch phase handled here.
-        T>=3: delegated to InstructionSet (memory-ref or register-ref).
-
-        Returns: (micro_op_str, changed_components_set)
-        """
         self._reset_updates()
 
         if self.S.value == 0:
@@ -92,6 +81,7 @@ class Machine:
         T = self.SC.value
         changed = set()
 
+        #FETCH
         if T == 0:
             # T0: AR <- PC
             self.AR.load(self.PC.value)
@@ -117,6 +107,7 @@ class Machine:
             self.SC.increment()
             micro = "T2: AR ← IR(0–11), I ← IR(15)"
 
+        #DECODE/EXECUTE PHASE
         else:
             opcode = (self.IR.value >> 12) & 0x7
             if opcode == 0b111 and self.I.value == 0:
@@ -126,9 +117,10 @@ class Machine:
                 # Memory-reference instruction (handles indirect inside)
                 micro, changed = self.iset.execute_memory_ref(opcode, T)
 
+        #PROFILER
         self.total_cycles += 1
 
-        # Track which components changed (based on 'updated' flags)
+        # Track which components changed (based on flags)
         reg_map = {
             "AR": self.AR,
             "PC": self.PC,
@@ -142,10 +134,6 @@ class Machine:
             "E": self.E,
             "I": self.I,
             "S": self.S,
-            "R": self.R,
-            "IEN": self.IEN,
-            "FGI": self.FGI,
-            "FGO": self.FGO,
         }
 
         for name, reg in reg_map.items():
@@ -157,12 +145,8 @@ class Machine:
 
         return micro, changed
 
+
     def step_instruction(self):
-        """
-        Execute until the end of the current instruction
-        (SC reset to 0 by finish_instruction, or HLT).
-        Returns the last (micro_op_str, changed_set) of that instruction.
-        """
         if self.S.value == 0:
             return "CPU halted (HLT executed)", set()
 
@@ -178,16 +162,11 @@ class Machine:
         return last_micro, last_changed
 
     def run_until_halt(self):
-        """
-        Run continuously until HLT (S=0).
-        Returns last (micro_op_str, changed_set).
-        """
         last_micro = ""
         last_changed = set()
         while self.S.value != 0:
             last_micro, last_changed = self.step_instruction()
         return last_micro, last_changed
-
 
     def show_reg(self, name: str) -> str:
         n = name.upper()
@@ -205,7 +184,7 @@ class Machine:
             r = self.TR
         elif n == "SC":
             return f"SC = {self.SC.value}"
-        elif n in ["E", "I", "S", "R", "IEN", "FGI", "FGO"]:
+        elif n in ["E", "I", "S"]:
             flag = getattr(self, n)
             return f"{n} = {flag.value}"
         else:
@@ -214,9 +193,6 @@ class Machine:
         return f"{n} = {self.format_word(r.value)} (binary: {self.format_bin16(r.value)})"
 
     def show_all(self) -> str:
-        """
-        Single-line snapshot similar to the example in Appendix A.
-        """
         return (
             f"AC={self.format_word(self.AC.value)} "
             f"DR={self.format_word(self.DR.value)} "
@@ -228,12 +204,6 @@ class Machine:
         )
 
     def show_mem(self, addr: int, count: int = 1) -> str:
-        """
-        If count == 1:
-          M[112] = 0x2003 (binary: 0010 0000 0000 0011)
-        If count > 1:
-          0x112 | 0x2003
-        """
         lines = []
         for i in range(count):
             a = (addr + i) & 0x0FFF
