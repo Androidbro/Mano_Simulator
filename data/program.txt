@@ -1,0 +1,4 @@
+000  2100   # LDA 100 (Load A)
+001  1101   # ADD 101 (Add B)
+002  3102   # STA 102 (Store Result)
+003  7001   # HLT
