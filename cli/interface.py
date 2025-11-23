@@ -10,15 +10,23 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from simulator.machine import Machine
-import commands
-
+from cli import commands  # <- keep this
 
 def main():
+    # ----- build absolute paths to data/ like GUI does -----
+    data_dir = os.path.join(ROOT_DIR, "data")
+    prog_path = os.path.join(data_dir, "program.txt")
+    data_path = os.path.join(data_dir, "data.txt")
+
     machine = Machine()
-    machine.load_program_and_data()
+
+    if not os.path.exists(prog_path):
+        print(f"[ERROR] program file not found: {prog_path}")
+    else:
+        machine.load_program_and_data(prog_file=prog_path, data_file=data_path)
 
     print("Mano Basic Computer Simulator")
-    print("Program loaded from data/program.txt and data/data.txt")
+    print(f"Program loaded from {prog_path} and {data_path}")
     print("Type 'help' for list of commands.")
 
     while True:

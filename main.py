@@ -1,75 +1,87 @@
-# This file is the main entry point of the basic computer simulator. When the user runs "python main.py",
-#this file asks whether they want to use the CLI (Command Line Interface) or the GUI (Graphical Interface).
+# main.py
 
-# It then initializes the CPU (BasicComputer), the Profiler, and
-# the Formatter, and launches the chosen interface.
+import os
+import sys
 
-# Import the main components of the simulator
-from simulator.machine import BasicComputer
-from profiler.profiler import Profiler
-from utils.formatter import Formatter
+#import paths
 
-from cli.interface import CommandLineInterface
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CLI_DIR = os.path.join(BASE_DIR, "cli")
+GUI_DIR = os.path.join(BASE_DIR, "gui")
 
-# Try importing the GUI.
-# If the GUI folder or app is missing, we disable GUI mode.
+for path in (BASE_DIR, CLI_DIR, GUI_DIR):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+#import CLI
+
+cli_main = None
+cli_error = None
+
 try:
-    from gui.app import start_gui
-    GUI_AVAILABLE = True
-except ImportError:
-    GUI_AVAILABLE = False
+    # cli/interface.py defines def main(): ...
+    from cli.interface import main as cli_main
+except Exception as e:
+    cli_error = e
 
-#Launches the CLI version of the simulator, which allows the user to type commands 
-def start_cli_mode(machine, profiler, formatter):
-    print("\n CLI mode...\n")
-    cli = CommandLineInterface(machine, profiler, formatter)
-    cli.start() #reading user comments 
+#import GUI
 
-# Launches the GUI version of the simulator.
-#If the GUI is not available, the function displays a message rather than crashing. 
-    
-def start_gui_mode(machine):
-    if not GUI_AVAILABLE:
-        print("GUI is not available in this project.")
-        return
-    print("\n GUI mode...\n")
-    start_gui(machine)
+gui_main = None
+gui_error = None
 
-# Displays a menu that asks the user which mode they want to use.
-#Then initializes the CPU , the profiler, and the formatter.
-#It then lanuches the selected mode 
-def main():
-    print(" BASIC COMPUTER SIMULATOR")
-    print("Choose mode:")
-    print("1. Command Line Interface (CLI)")
-    print("2. Graphical User Interface (GUI)")
-    print("3. Exit\n")
+try:
+    import tkinter as tk
+    # gui/app.py defines class ManoApp
+    from gui.app import ManoApp
 
-    choice = input("> ").strip()
+    def gui_main():
+        root = tk.Tk()
+        app = ManoApp(root)
+        root.mainloop()
 
- # Create the core components of the simulator.
-    # These objects are used by both CLI and GUI:
-    # BasicComputer: simulates registers, memory, micro-ops, instructions
-    #  Profiler: counts cycles, CPI, memory reads/writes
-    # Formatter: converts numbers to hex/binary strings
-    machine = BasicComputer()
-    profiler = Profiler(machine)
-    formatter = Formatter()
-    
- # Launch CLI mode
-    if choice == "1":
-        start_cli_mode(machine, profiler, formatter)
-        
- # Launch GUI mode (if available)
-    elif choice == "2":
-        start_gui_mode(machine)
-        
-  # Exit the program
-    else:
-        print("Exiting.")
+except Exception as e:
+    gui_error = e
 
-# This ensures that main() runs only when this file is executed directly.
+
+def choose_mode():
+    """Prompt user to choose CLI or GUI and run it."""
+    import sys as _sys
+
+    while True:
+        print("Mano Basic Computer Simulator")
+        print("1) CLI mode")
+        print("2) GUI mode")
+        print("Q) Quit")
+        choice = input("Select mode [1/2/Q]: ").strip().lower()
+
+        #CLI
+        if choice in ("1", "cli"):
+            if cli_main is None:
+                print("\n[CRITICAL ERROR] Could not start CLI mode.")
+                print(f"Reason: {cli_error}\n")
+                continue
+            print("\nStarting CLI mode...\n")
+            cli_main()
+            break
+
+        #GUI
+        elif choice in ("2", "gui"):
+            if gui_main is None:
+                print("\n[CRITICAL ERROR] Could not start GUI mode.")
+                print(f"Reason: {gui_error}\n")
+                continue
+            print("\nStarting GUI mode...\n")
+            gui_main()
+            break
+
+        #Quit
+        elif choice in ("q", "quit", "exit"):
+            print("Exiting.")
+            _sys.exit(0)
+
+        else:
+            print("Invalid choice, please enter 1, 2, or Q.\n")
+
+
 if __name__ == "__main__":
-    main()
-
-
+    choose_mode()
