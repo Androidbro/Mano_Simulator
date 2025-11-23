@@ -6,19 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="ff9edf83-4b64-4492-9f26-25f97b2e6820" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/main/Analysis-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/main/Analysis-00.toc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/main/EXE-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/main/EXE-00.toc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/main/PKG-00.toc" beforeDir="false" afterPath="$PROJECT_DIR$/build/main/PKG-00.toc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/main/PYZ-00.pyz" beforeDir="false" afterPath="$PROJECT_DIR$/build/main/PYZ-00.pyz" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/main/base_library.zip" beforeDir="false" afterPath="$PROJECT_DIR$/build/main/base_library.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/main/main.pkg" beforeDir="false" afterPath="$PROJECT_DIR$/build/main/main.pkg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/main/warn-main.txt" beforeDir="false" afterPath="$PROJECT_DIR$/build/main/warn-main.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/main/xref-main.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/main/xref-main.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/assembly_code.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/assembly_code.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/data.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/data.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/main.exe" beforeDir="false" afterPath="$PROJECT_DIR$/dist/main.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assembler/assembler.py" beforeDir="false" afterPath="$PROJECT_DIR$/assembler/assembler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cli/commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/cli/commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cli/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/cli/interface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui/datapath_view.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui/datapath_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simulator/instruction_set.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulator/instruction_set.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simulator/machine.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulator/machine.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simulator/memory.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulator/memory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simulator/registers.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulator/registers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +46,7 @@
     "Python.assembler.executor": "Run",
     "Python.commands.executor": "Run",
     "Python.datapath_view.executor": "Run",
+    "Python.instruction_set.executor": "Run",
     "Python.interface.executor": "Run",
     "Python.main.executor": "Run",
     "Python.memory.executor": "Run",

@@ -1,64 +1,51 @@
-# simulator/registers.py
-
 class Register:
     def __init__(self, name: str, bits: int):
-        self.name = name
-        self.bits = bits
+        self.name = name  # register name
+        self.bits = bits  # width in bits
         self.value = 0
-        # Mask is used to enforce bit width (e.g., 0xFFF for 12-bit)
-        self._mask = (1 << bits) - 1
-        # specific flag to track if this register changed in the current step
-        self.updated = False 
+        self._mask = (1 << bits) - 1  # mask for bit width
+        self.updated = False  # UI update flag
 
     def load(self, val: int):
-        #Loads a value, handling bit-masking automatically.
-        previous_value = self.value
-        self.value = val & self._mask
-        
-        # Mark as updated if value changed (or even if written to same value, 
-        # depending on strict hardware simulation preference)
-        self.updated = True 
+        previous_value = self.value  # old value
+        self.value = val & self._mask  # load masked value
+        self.updated = True  # mark change
 
     def increment(self):
-        #Increments the register, wrapping around if it overflows.
-        self.value = (self.value + 1) & self._mask
+        self.value = (self.value + 1) & self._mask  # wrap on overflow
         self.updated = True
 
     def clear(self):
-        #Clears the register to 0. 
-        self.value = 0
+        self.value = 0  # zero register
         self.updated = True
-        
+
     def reset_state(self):
-        #Call this at the start of every cycle to reset the 'updated' status. 
-        self.updated = False
+        self.updated = False  # clear update flag
 
     def __str__(self):
-        # Format as Hex (e.g., 0x123)
-        return f"0x{self.value:X}"
+        return f"0x{self.value:X}"  # hex formatting
 
     def get_binary(self):
-        # Helper for the 'show' command binary display
-        return format(self.value, f'0{self.bits}b')
+        return format(self.value, f'0{self.bits}b')  # binary formatting
 
-# Special 1-bit register for Flags E (Carry), I (Indirect), etc.
+
 class Flag:
     def __init__(self, name: str):
         self.name = name
-        self.value = 0 # 0 or 1
+        self.value = 0  # 1-bit flag
         self.updated = False
 
     def set(self):
-        self.value = 1
+        self.value = 1  # set flag
         self.updated = True
 
     def clear(self):
-        self.value = 0
+        self.value = 0  # clear flag
         self.updated = True
-        
+
     def complement(self):
-        self.value = 1 - self.value
+        self.value = 1 - self.value  # flip flag
         self.updated = True
-        
+
     def reset_state(self):
-        self.updated = False
+        self.updated = False  # clear update tracking
