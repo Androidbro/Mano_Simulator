@@ -12,8 +12,7 @@ The project includes all necessary components and input files.
   * `cli/`: The **Command-Line Interface** component.
   * `gui/`: The optional **Graphical User Interface** component.
   * `assembler/`: The Python **assembler** script.
-  * `utils/`: Utility functions.
-  * `main.py` (`MANO SIMULATOR.py`): The main launcher script.
+  * `MANO SIMULATOR.py`: The main launcher script.
   * `data/`:
       * `program.txt`: Contains **hexadecimal instructions** (automatically loaded).
       * `data.txt`: Contains optional initial **memory data** (automatically loaded).
