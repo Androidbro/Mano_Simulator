@@ -20,11 +20,12 @@ class ManoApp:
 
         self.machine = Machine()
         self.assembler = Assembler()
-        self.is_running = False
+        self.is_running = False          # used by RUN loop
         self.run_speed = 300
         self.program_loaded = False
         self.last_micro_op = ""
 
+        # Project root / data paths
         current_dir = os.path.dirname(os.path.abspath(__file__))
         if os.path.basename(current_dir).lower() == "gui":
             self.project_root = os.path.dirname(current_dir)
@@ -36,6 +37,7 @@ class ManoApp:
         self.prog_path = os.path.join(self.data_dir, "program.txt")
         self.data_path = os.path.join(self.data_dir, "data.txt")
 
+        # Layout
         self.main_frame = tk.Frame(self.root, padx=10, pady=10)
         self.main_frame.pack(fill="both", expand=True)
 
@@ -51,6 +53,8 @@ class ManoApp:
         self._log("Welcome to Mano Basic Computer Simulator.")
         self.update_ui()
 
+    # ----------------- UI BUILDERS -----------------
+
     def _build_left_panel(self):
         left = tk.Frame(self.main_frame, bd=2, relief="groove")
         left.grid(row=0, column=0, sticky="nsew", padx=5)
@@ -63,7 +67,9 @@ class ManoApp:
         tk.Button(btn_frame, text="Load Hex (program.txt)", command=self.load_program_hex).pack(fill="x", pady=2)
 
         tk.Label(left, text="Execution Log", font=("Arial", 12, "bold")).pack(pady=(20, 5))
-        self.cli_text = scrolledtext.ScrolledText(left, height=18, state="disabled", bg="#f4f4f4", font=("Courier", 9))
+        self.cli_text = scrolledtext.ScrolledText(
+            left, height=18, state="disabled", bg="#f4f4f4", font=("Courier", 9)
+        )
         self.cli_text.pack(fill="both", expand=True, padx=10)
 
         prof = tk.LabelFrame(left, text="Profiler", font=("Arial", 11, "bold"), padx=10, pady=10)
@@ -115,7 +121,9 @@ class ManoApp:
         speed_frame = tk.Frame(right)
         speed_frame.pack(fill="x", padx=10, pady=(4, 8))
         tk.Label(speed_frame, text="Run Speed (ms):").pack(anchor="w")
-        self.speed_scale = tk.Scale(speed_frame, from_=50, to=1000, orient="horizontal", command=self._on_speed_change)
+        self.speed_scale = tk.Scale(
+            speed_frame, from_=10, to=2000, orient="horizontal", command=self._on_speed_change
+        )
         self.speed_scale.set(self.run_speed)
         self.speed_scale.pack(anchor="w", fill="x")
 
@@ -146,20 +154,40 @@ class ManoApp:
         self.mem_tree.pack(side="left", fill="both", expand=True)
         scroll.pack(side="right", fill="y")
 
+    # ----------------- LOGGING HELPERS -----------------
+
     def _log(self, msg):
         self.cli_text.config(state="normal")
         self.cli_text.insert("end", f"> {msg}\n")
         self.cli_text.see("end")
         self.cli_text.config(state="disabled")
 
+    def _log_instruction_state(self, prefix="Instruction executed"):
+        inst_hex = self.machine.format_word(self.machine.IR.value)
+        pc = self.machine.PC.value
+        ac = self.machine.format_word(self.machine.AC.value)
+        self._log(f"{prefix}: {inst_hex}")
+        self._log(f"PC = 0x{pc:03X} AC = {ac}")
+
+    def _log_changed_set(self, changed):
+        if not changed:
+            self._log("Changed: None")
+        else:
+            self._log("Changed: " + ", ".join(sorted(changed)))
+
+    # ----------------- UTILS -----------------
+
     def _on_speed_change(self, value):
         self.run_speed = int(float(value))
 
     def _ensure_program_loaded(self):
+        """Ensure a program has been loaded before executing anything."""
         if not self.program_loaded:
             self._log("Error: Load program first.")
             return False
         return True
+
+    # ----------------- LOADING / ASSEMBLY -----------------
 
     def load_and_assemble(self):
         path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
@@ -180,15 +208,22 @@ class ManoApp:
         self._load_program_to_machine()
 
     def _load_program_to_machine(self):
+        """Create a fresh Machine and load program + data.
+
+        This mirrors the CLI behavior so profiler stats start from a clean state.
+        """
         self.machine = Machine()
         try:
             self.machine.load_program_and_data(self.prog_path, self.data_path)
             self.program_loaded = True
             self.last_micro_op = ""
+            self.is_running = False
             self._log("Program loaded into machine.")
             self.update_ui()
         except Exception as e:
             self._log(f"Load Error: {e}")
+
+    # ----------------- COMMAND HANDLERS -----------------
 
     def cmd_next_cycle(self):
         if not self._ensure_program_loaded():
@@ -199,13 +234,14 @@ class ManoApp:
         micro, changed = self.machine.step_cycle()
         self._after_step(micro, changed)
         self._log(micro)
+        self._log_changed_set(changed)
 
     def cmd_fast_cycle(self):
         if not self._ensure_program_loaded():
             return
         try:
             n = int(self.fast_cycle_entry.get())
-        except:
+        except Exception:
             self._log("Invalid N")
             return
         last_micro, last_changed = "", set()
@@ -217,6 +253,7 @@ class ManoApp:
         if last_micro:
             self._after_step(last_micro, last_changed)
             self._log(f"Fast Cycle x{n}. Last: {last_micro}")
+            self._log_changed_set(last_changed)
         else:
             self._log("Fast Cycle: nothing executed.")
 
@@ -229,13 +266,14 @@ class ManoApp:
         last_micro, last_changed = self.machine.step_instruction()
         self._after_step(last_micro, last_changed)
         self._log(f"Instruction done. Last micro-op: {last_micro}")
+        self._log_instruction_state()
 
     def cmd_fast_inst(self):
         if not self._ensure_program_loaded():
             return
         try:
             n = int(self.fast_inst_entry.get())
-        except:
+        except Exception:
             self._log("Invalid N")
             return
         last_micro, last_changed = "", set()
@@ -247,6 +285,7 @@ class ManoApp:
         if last_micro:
             self._after_step(last_micro, last_changed)
             self._log(f"Fast Instr x{n}. Last micro-op: {last_micro}")
+            self._log_instruction_state()
         else:
             self._log("Fast Instr: nothing executed.")
 
@@ -254,29 +293,34 @@ class ManoApp:
         if not self._ensure_program_loaded():
             return
         if self.machine.S.value == 0:
-            self._log("Machine is HALTED.")
+            self._log("Machine HALTED.")
             return
         if self.is_running:
-            self.is_running = False
-            self._log("Run stopped.")
-            return
+            return  # ignore multiple RUN presses
         self.is_running = True
-        self._log("Running...")
         self._run_loop()
 
     def _run_loop(self):
         if not self.is_running:
             return
+
+        # 1) Always execute the next instruction first
+        last_micro, changed = self.machine.step_instruction()
+        self._after_step(last_micro, changed)
+        self._log_instruction_state()
+
+        # 2) If HLT just ran (S became 0), stop here
         if self.machine.S.value == 0:
             self.is_running = False
             self._log("Halted.")
             self.update_ui()
             return
-        micro, changed = self.machine.step_cycle()
-        self._after_step(micro, changed)
+
+        # 3) Otherwise, schedule the next instruction
         self.root.after(self.run_speed, self._run_loop)
 
     def cmd_reset(self):
+        """Reset machine and reload program (if any), like restarting the CLI."""
         self.is_running = False
         self.machine = Machine()
         if self.program_loaded:
@@ -290,6 +334,8 @@ class ManoApp:
         self.last_micro_op = ""
         self.update_ui()
 
+    # ----------------- UI UPDATE -----------------
+
     def _after_step(self, micro, changed):
         self.last_micro_op = micro
         self.lbl_micro.config(text=f"Micro: {micro}")
@@ -299,6 +345,7 @@ class ManoApp:
         if changed_set is None:
             changed_set = set()
 
+        # Update datapath diagram
         self.datapath_view.update_from_machine(self.machine, changed_set, self.last_micro_op)
 
         cycles = self.machine.total_cycles
@@ -319,17 +366,22 @@ class ManoApp:
 
         self.lbl_seq.config(text=f"Seq: T{self.machine.SC.value}")
 
+        # Memory view: always show actual memory contents
         self.mem_tree.delete(*self.mem_tree.get_children())
         item_ids = []
         for addr in range(0x1000):
-            val = self.machine.memory.data[addr] if self.program_loaded else 0
+            val = self.machine.memory.data[addr]
             tags = []
             if self.program_loaded:
                 if addr == self.machine.PC.value:
                     tags.append("pc")
                 if addr == self.machine.AR.value:
                     tags.append("ar")
-            iid = self.mem_tree.insert("", "end", values=(f"{addr:03X}", f"{val:04X}", str(val)), tags=tags)
+            iid = self.mem_tree.insert(
+                "", "end",
+                values=(f"{addr:03X}", f"{val:04X}", str(val)),
+                tags=tags,
+            )
             item_ids.append(iid)
 
         self.mem_tree.tag_configure("pc", background="#ADD8E6")
