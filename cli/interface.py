@@ -1,25 +1,27 @@
-# cli/interface.py
-
 import os
 import sys
 
+# determine project root directory
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(CURRENT_DIR)
 
+# make sure root is on Python path for imports
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from simulator.machine import Machine
-from cli import commands  # <- keep this
+from cli import commands
+
 
 def main():
-    # ----- build absolute paths to data/ like GUI does -----
+    # build absolute paths to program and data files
     data_dir = os.path.join(ROOT_DIR, "data")
     prog_path = os.path.join(data_dir, "program.txt")
     data_path = os.path.join(data_dir, "data.txt")
 
-    machine = Machine()
+    machine = Machine()  # create Mano machine instance
 
+    # attempt to load program and data into memory
     if not os.path.exists(prog_path):
         print(f"[ERROR] program file not found: {prog_path}")
     else:
@@ -29,23 +31,26 @@ def main():
     print(f"Program loaded from {prog_path} and {data_path}")
     print("Type 'help' for list of commands.")
 
+    # main REPL loop
     while True:
         try:
             line = input("> ").strip()
         except EOFError:
-            break
+            break  # exit on EOF
 
         if not line:
-            continue
+            continue  # ignore empty lines
 
         parts = line.split()
         cmd = parts[0].lower()
         args = parts[1:]
 
         if cmd in ("exit", "quit"):
+            # terminate simulator
             break
 
         elif cmd == "help":
+            # print available commands
             print("Commands:")
             print("  next_cycle")
             print("  fast_cycle N")
@@ -59,9 +64,11 @@ def main():
             print("  exit / quit")
 
         elif cmd == "next_cycle":
+            # run one clock cycle
             commands.cmd_next_cycle(machine)
 
         elif cmd == "fast_cycle":
+            # run N cycles
             if not args:
                 print("Usage: fast_cycle N")
             else:
@@ -72,9 +79,11 @@ def main():
                     print("N must be an integer")
 
         elif cmd == "next_inst":
+            # run one instruction
             commands.cmd_next_inst(machine)
 
         elif cmd == "fast_inst":
+            # run N instructions
             if not args:
                 print("Usage: fast_inst N")
             else:
@@ -85,14 +94,17 @@ def main():
                     print("N must be an integer")
 
         elif cmd == "run":
+            # run until halt
             commands.cmd_run(machine)
 
         elif cmd == "show":
+            # delegate to show subcommand
             commands.cmd_show(machine, args)
 
         else:
+            # unknown CLI command
             print("Unknown command. Type 'help' for commands.")
 
 
 if __name__ == "__main__":
-    main()
+    main()  # start CLI when run as script

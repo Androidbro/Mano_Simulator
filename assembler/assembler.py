@@ -1,3 +1,5 @@
+# super duper assembler
+
 import os
 
 class Assembler:
