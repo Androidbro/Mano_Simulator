@@ -1,10 +1,10 @@
-## 💻 Mano Basic Computer Simulator (COE 341)
+##  Mano Basic Computer Simulator (COE 341)
 
 This project is the complete COE 341 **Basic Computer Simulator**, implemented in **Python** based on **Mano's Computer System Architecture (3rd Edition)**. It allows you to execute and analyze programs written for the Mano Basic Computer architecture in both hexadecimal machine code and assembly language.
 
 -----
 
-## 📂 Project Structure
+##  Project Structure
 
 The project includes all necessary components and input files.
 
@@ -21,7 +21,7 @@ The project includes all necessary components and input files.
 
 -----
 
-## 🚀 Program Execution
+##  Program Execution
 
 You can run the simulator using either pre-assembled hexadecimal files or by assembling your own assembly code.
 
@@ -107,7 +107,7 @@ The Command-Line Interface (CLI) provides robust controls for stepping through e
 
 -----
 
-## 🎨 GUI Mode
+##  GUI Mode
 
 The Graphical User Interface (GUI) offers an alternative, visual way to interact with the simulator.
 
@@ -116,7 +116,7 @@ The Graphical User Interface (GUI) offers an alternative, visual way to interact
 
 -----
 
-## ✍️ Assembler Details
+##  Assembler Details
 
 The assembler translates assembly code into machine code for the simulator.
 
@@ -128,7 +128,7 @@ The assembler translates assembly code into machine code for the simulator.
 
 -----
 
-## 💡 Sample Programs for Profiler
+##  Sample Programs for Profiler
 
 These examples can be used to test the simulator and compare the performance metrics displayed by the `show profiler` command.
 
