@@ -1,4 +1,4 @@
-Basic Computer simulator
+Basic Computer Simulator
 This folder contains the complete COE 341 Basic Computer Simulator, implemented in Python based on Mano’s Computer System Architecture 
 (3rd Edition). It includes all source code components such as the CPU core (simulator/), command-line 
 interface (cli/), optional graphical interface (gui/), utility functions (utils/), and the main launcher (main.py). 
