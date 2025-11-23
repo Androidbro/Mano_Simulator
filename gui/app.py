@@ -5,10 +5,11 @@ from tkinter import ttk, filedialog, messagebox, scrolledtext
 try:
     from simulator.machine import Machine
     from assembler.assembler import Assembler
-    from datapath_view import DatapathView
+    from gui.datapath_view import DatapathView
 except ImportError as e:
     print(f"CRITICAL ERROR: Could not import modules. {e}")
-    exit()
+    import sys
+    sys.exit()
 
 
 class ManoApp:

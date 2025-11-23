@@ -10,7 +10,7 @@ if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
 
 from simulator.machine import Machine
-import commands
+import cli.commands as commands
 
 
 def main():
