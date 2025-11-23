@@ -1,4 +1,4 @@
-# main.py
+
 
 from simulator.machine import BasicComputer
 from profiler.profiler import Profiler
@@ -29,7 +29,7 @@ def start_gui_mode(machine):
 
 
 def main():
-    print("       BASIC COMPUTER SIMULATOR")
+    print(" BASIC COMPUTER SIMULATOR")
     print("Choose mode:")
     print("1. Command Line Interface (CLI)")
     print("2. Graphical User Interface (GUI)")
@@ -37,7 +37,7 @@ def main():
 
     choice = input("> ").strip()
 
-    # Build core components
+
     machine = BasicComputer()
     profiler = Profiler(machine)
     formatter = Formatter()
@@ -54,3 +54,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
